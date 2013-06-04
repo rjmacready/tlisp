@@ -16,6 +16,9 @@
   ; delimiters
   ("\\(" (return (values :oparen $@)))
   ("\\)" (return (values :cparen $@)))
+  ("#[Nn][Ii][Ll]" (return (values :nil :nil)))
+  ("#[Tt]" (return (values :t :t)))
+  ("#[Ff]" (return (values :f :f)))
   ; id
   ("[a-zA-Z][a-zA-Z0-9]*" (return (values :id $@)))
   ; float
@@ -70,7 +73,7 @@
 
 (define-parser parser
   (:start-symbol term) ; expression
-  (:terminals ( :oparen :cparen :id :float :int :quote ))
+  (:terminals ( :oparen :cparen :id :float :int :quote :nil :t :f ))
   
 ;  (expression 
 ;   term)
@@ -100,6 +103,9 @@
    id
    ( :oparen expressions :cparen #'ast-list )
    ( :quote term )
+   :t
+   :f
+   :nil
    )
   )
 
@@ -122,11 +128,12 @@
 ; * generics - which need type constructors
 ; * lazy types? 
 ; * overloads / overload resolution
+; * a list of valid "drops" (int32 to float32, etc ...)
 
-(defun type-of (ast)
+(defun type-of-ast (ast)
   "Tries to deduce the type of an ast."
   ast)
 
-(defun type-check (ast)
+(defun type-check-ast (ast)
   "Check if an AST has its types ok"
   (values 'ok ast))
